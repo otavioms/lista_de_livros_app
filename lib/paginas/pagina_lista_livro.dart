@@ -152,7 +152,7 @@ class PaginaListaLivroState extends State<PaginaListaLivro> {
                                   TextButton(
                                     child: const Text('Excluir', style: TextStyle(color: Colors.red)),
                                     onPressed: () async {
-                                      await _controle.excluir(livro.id!);
+                                      await _controle.excluir(livro.identificador!);
                                       carregarLivros();
                                       Navigator.of(context).pop();
                                       ScaffoldMessenger.of(context).showSnackBar(

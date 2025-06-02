@@ -71,7 +71,7 @@ class _PaginaCadastroLivroState extends State<PaginaCadastroLivro> {
 
     try {
       final livro = Livro(
-        id: widget.livro?.id,
+        widget.livro?.identificador ?? 0,
         nome: _nomeController.text,
         autor: _autorController.text,
         caminhoImagem: _imagem?.path,

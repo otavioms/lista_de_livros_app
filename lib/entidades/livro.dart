@@ -1,28 +1,39 @@
+import 'package:lista_de_livros/entidades/entidade.dart';
 import 'package:lista_de_livros/banco_dados/dicionario_dados.dart';
 
-class Livro {
-  int? id;
+class Livro implements Entidade {
+  @override
+  int identificador;
+
   String nome;
   String autor;
   String? caminhoImagem;
 
-  Livro({this.id, required this.nome, required this.autor, this.caminhoImagem});
+  Livro(this.identificador, {required this.nome, required this.autor, this.caminhoImagem});
 
-  Map<String, dynamic> toMap() {
+  Livro.criarDeMapa(Map<String, dynamic> mapaEntidade)
+      : identificador = mapaEntidade[DicionarioDados.idLivro],
+        nome = mapaEntidade[DicionarioDados.nome],
+        autor = mapaEntidade[DicionarioDados.autor],
+        caminhoImagem = mapaEntidade[DicionarioDados.caminhoImagem];
+
+  @override
+  Map<String, dynamic> converterParaMapa() {
     return {
-      DicionarioDados.idLivro: id,
+      DicionarioDados.idLivro: identificador,
       DicionarioDados.nome: nome,
       DicionarioDados.autor: autor,
       DicionarioDados.caminhoImagem: caminhoImagem,
     };
   }
 
-  factory Livro.fromMap(Map<String, dynamic> map) {
-    return Livro(
-      id: map[DicionarioDados.idLivro],
-      nome: map[DicionarioDados.nome],
-      autor: map[DicionarioDados.autor],
-      caminhoImagem: map[DicionarioDados.caminhoImagem],
-    );
+  @override
+  Entidade criarEntidade(Map<String, dynamic> mapaEntidade) {
+    return Livro.criarDeMapa(mapaEntidade);
+  }
+
+  @override
+  Entidade criarCopia() {
+    return criarEntidade(converterParaMapa());
   }
 }

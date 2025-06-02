@@ -1,38 +1,41 @@
-import 'package:sqflite/sqflite.dart';
-import '../banco_dados/acesso_banco_dados.dart';
-import '../banco_dados/dicionario_dados.dart';
-import '../entidades/livro.dart';
+import 'package:lista_de_livros/banco_dados/dicionario_dados.dart';
+import 'package:lista_de_livros/entidades/entidade.dart';
+import 'package:lista_de_livros/entidades/livro.dart';
+import 'controle_cadastro.dart';
 
-class ControleCadastroLivro {
-  Future<Database> get _bancoDados => AcessoBancoDados().bancoDados;
+class ControleCadastroLivro extends ControleCadastro {
+  ControleCadastroLivro() : super(DicionarioDados.tabelaLivro, DicionarioDados.idLivro);
+
+  @override
+  Future<Entidade> criarEntidade(Map<String, dynamic> mapaEntidade) async {
+    return Livro.criarDeMapa(mapaEntidade);
+  }
 
   Future<void> inserir(Livro livro) async {
-    final db = await _bancoDados;
-    await db.insert(DicionarioDados.tabelaLivro, livro.toMap());
+    await super.incluir(livro);
+    await emitirLista();
   }
 
   Future<void> atualizar(Livro livro) async {
-    final db = await _bancoDados;
-    await db.update(
-      DicionarioDados.tabelaLivro,
-      livro.toMap(),
-      where: '${DicionarioDados.idLivro} = ?',
-      whereArgs: [livro.id],
-    );
+    await super.alterar(livro);
+    await emitirLista();
   }
 
-  Future<void> excluir(int id) async {
-    final db = await _bancoDados;
-    await db.delete(
-      DicionarioDados.tabelaLivro,
-      where: '${DicionarioDados.idLivro} = ?',
-      whereArgs: [id],
-    );
+  @override
+  Future<int> excluir(int id) async {
+    final resultado = await super.excluir(id);
+    await emitirLista();
+    return resultado;
   }
 
+  @override
   Future<List<Livro>> selecionarTodos() async {
-    final db = await _bancoDados;
-    final List<Map<String, dynamic>> mapas = await db.query(DicionarioDados.tabelaLivro);
-    return List.generate(mapas.length, (i) => Livro.fromMap(mapas[i]));
+    final entidades = await super.selecionarTodos();
+    return entidades.cast<Livro>();
+  }
+
+  Future<Livro?> selecionar(int id) async {
+    final entidade = await super.selecionar(id);
+    return entidade as Livro?;
   }
 }
