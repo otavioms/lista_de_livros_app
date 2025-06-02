@@ -71,7 +71,7 @@ class _PaginaCadastroLivroState extends State<PaginaCadastroLivro> {
 
     try {
       final livro = Livro(
-        widget.livro?.identificador ?? 0,
+        widget.livro?.identificador, // Passa null para novos livros
         nome: _nomeController.text,
         autor: _autorController.text,
         caminhoImagem: _imagem?.path,
@@ -79,12 +79,9 @@ class _PaginaCadastroLivroState extends State<PaginaCadastroLivro> {
 
       if (widget.livro == null) {
         await _controle.inserir(livro);
-        debugPrint('Livro inserido: ${livro.nome}');
       } else {
         await _controle.atualizar(livro);
-        debugPrint('Livro atualizado: ${livro.nome}');
       }
-
       if (widget.onSave != null) {
         widget.onSave!(livro);
       }
@@ -99,8 +96,6 @@ class _PaginaCadastroLivroState extends State<PaginaCadastroLivro> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Livro salvo com sucesso!')),
       );
-
-      // Não usamos Navigator.pop(), pois a página está no IndexedStack
     } catch (e) {
       debugPrint('Erro ao salvar livro: $e');
       ScaffoldMessenger.of(context).showSnackBar(
