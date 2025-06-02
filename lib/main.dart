@@ -13,6 +13,7 @@ class ListaLivrosApp extends StatelessWidget {
     return MaterialApp(
       title: 'Lista de Livros',
       theme: ThemeData(primarySwatch: Colors.blue),
+      debugShowCheckedModeBanner: false,
       home: const PaginaPrincipal(),
     );
   }

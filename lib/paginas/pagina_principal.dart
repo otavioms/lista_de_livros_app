@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../entidades/livro.dart';
 import 'pagina_lista_livro.dart';
 import 'pagina_cadastro_livro.dart';
 import 'pagina_configuracoes.dart';
@@ -11,38 +12,41 @@ class PaginaPrincipal extends StatefulWidget {
 }
 
 class _PaginaPrincipalState extends State<PaginaPrincipal> {
-  int _indiceAtual = 0;
-  final List<Widget> _telas = [
-    const PaginaListaLivro(),
-    const PaginaCadastroLivro(),
-    PaginaConfiguracoes(),
-  ];
+  int _selectedIndex = 0;
+  final GlobalKey<PaginaListaLivroState> _listaKey = GlobalKey<PaginaListaLivroState>();
 
   void _onItemTapped(int index) {
     setState(() {
-      debugPrint('Navegando para índice: $index');
-      _indiceAtual = index;
+      _selectedIndex = index;
     });
-    // Forçar rebuild da tela de lista se voltar para ela
-    if (index == 0 && _telas[0] is PaginaListaLivro) {
-      (_telas[0] as PaginaListaLivro).createState().setState(() {});
+  }
+
+  void _onBookSaved(Livro livro) {
+    if (_listaKey.currentState != null) {
+      _listaKey.currentState!.carregarLivros();
     }
+    // Voltar para a página inicial (Home) após salvar
+    setState(() {
+      _selectedIndex = 0;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
-        index: _indiceAtual,
-        children: _telas,
+        index: _selectedIndex,
+        children: [
+          PaginaListaLivro(key: _listaKey),
+          PaginaCadastroLivro(onSave: _onBookSaved),
+          PaginaConfiguracoes(),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _indiceAtual,
-        onTap: _onItemTapped,
-        items: const [
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.book),
-            label: 'Livros',
+            icon: Icon(Icons.home),
+            label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add),
@@ -53,6 +57,18 @@ class _PaginaPrincipalState extends State<PaginaPrincipal> {
             label: 'Configurações',
           ),
         ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: const Color(0xFF1976D2),
+        unselectedItemColor: Colors.grey[600],
+        backgroundColor: Colors.white,
+        selectedLabelStyle: const TextStyle(
+          fontFamily: 'Roboto',
+          fontWeight: FontWeight.bold,
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontFamily: 'Roboto',
+        ),
+        onTap: _onItemTapped,
       ),
     );
   }

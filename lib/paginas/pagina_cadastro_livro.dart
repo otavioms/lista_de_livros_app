@@ -6,8 +6,9 @@ import '../entidades/livro.dart';
 
 class PaginaCadastroLivro extends StatefulWidget {
   final Livro? livro;
+  final Function(Livro)? onSave;
 
-  const PaginaCadastroLivro({Key? key, this.livro}) : super(key: key);
+  const PaginaCadastroLivro({Key? key, this.livro, this.onSave}) : super(key: key);
 
   @override
   _PaginaCadastroLivroState createState() => _PaginaCadastroLivroState();
@@ -83,7 +84,23 @@ class _PaginaCadastroLivroState extends State<PaginaCadastroLivro> {
         await _controle.atualizar(livro);
         debugPrint('Livro atualizado: ${livro.nome}');
       }
-      Navigator.pop(context);
+
+      if (widget.onSave != null) {
+        widget.onSave!(livro);
+      }
+
+      // Limpar o estado do formulário
+      setState(() {
+        _nomeController.clear();
+        _autorController.clear();
+        _imagem = null;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Livro salvo com sucesso!')),
+      );
+
+      // Não usamos Navigator.pop(), pois a página está no IndexedStack
     } catch (e) {
       debugPrint('Erro ao salvar livro: $e');
       ScaffoldMessenger.of(context).showSnackBar(

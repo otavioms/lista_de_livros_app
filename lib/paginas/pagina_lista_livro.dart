@@ -8,10 +8,10 @@ class PaginaListaLivro extends StatefulWidget {
   const PaginaListaLivro({Key? key}) : super(key: key);
 
   @override
-  _PaginaListaLivroState createState() => _PaginaListaLivroState();
+  PaginaListaLivroState createState() => PaginaListaLivroState();
 }
 
-class _PaginaListaLivroState extends State<PaginaListaLivro> {
+class PaginaListaLivroState extends State<PaginaListaLivro> {
   final ControleCadastroLivro _controle = ControleCadastroLivro();
   List<Livro> _livros = [];
   bool _isLoading = true;
@@ -19,10 +19,10 @@ class _PaginaListaLivroState extends State<PaginaListaLivro> {
   @override
   void initState() {
     super.initState();
-    _carregarLivros();
+    carregarLivros();
   }
 
-  Future<void> _carregarLivros() async {
+  Future<void> carregarLivros() async {
     try {
       debugPrint('Carregando livros...');
       setState(() {
@@ -130,7 +130,7 @@ class _PaginaListaLivroState extends State<PaginaListaLivro> {
                               builder: (context) => PaginaCadastroLivro(livro: livro),
                             ),
                           );
-                          _carregarLivros();
+                          carregarLivros();
                         },
                       ),
                       IconButton(
@@ -153,7 +153,7 @@ class _PaginaListaLivroState extends State<PaginaListaLivro> {
                                     child: const Text('Excluir', style: TextStyle(color: Colors.red)),
                                     onPressed: () async {
                                       await _controle.excluir(livro.id!);
-                                      _carregarLivros();
+                                      carregarLivros();
                                       Navigator.of(context).pop();
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(content: Text('Livro excluído com sucesso!')),
@@ -173,18 +173,6 @@ class _PaginaListaLivroState extends State<PaginaListaLivro> {
             ),
           );
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          debugPrint('Abrindo página de cadastro');
-          await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const PaginaCadastroLivro()),
-          );
-          _carregarLivros();
-        },
-        backgroundColor: const Color(0xFF1976D2),
-        child: const Icon(Icons.add, color: Colors.white),
       ),
       backgroundColor: const Color(0xFFF5F5F5),
     );
